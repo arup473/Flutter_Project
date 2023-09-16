@@ -1,56 +1,61 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(ProfileApp());
+void main() {
+  runApp(MyApp());
+}
 
-class ProfileApp extends StatelessWidget {
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: ProfileScreen(),
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text("My Shopping List"),
+          centerTitle: true, // Center the title in the app bar
+          actions: [
+            IconButton(
+              icon: Icon(Icons.shopping_cart),
+              onPressed: () {
+                // Add cart functionality here
+              },
+            ),
+          ],
+        ),
+        body: ShoppingList(),
+      ),
     );
   }
 }
 
-class ProfileScreen extends StatelessWidget {
+class ShoppingList extends StatelessWidget {
+  final List<Map<String, String>> items = [
+    {"name": "Apples", "icon": "🍎"},
+    {"name": "Bananas", "icon": "🍌"},
+    {"name": "Milk", "icon": "🥛"},
+    {"name": "Bread", "icon": "🍞"},
+    {"name": "Eggs", "icon": "🥚"},
+  ];
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Profile'),
-        centerTitle: true,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            CircleAvatar(
-              radius: 15,
-              backgroundColor: Colors.green, // Background color of the circle
-              child: Icon(
-                Icons.person,
-                size: 20,
-                color: Colors.white, // Color of the icon
+    return ListView.builder(
+      itemCount: items.length,
+      itemBuilder: (BuildContext context, int index) {
+        final item = items[index];
+        return ListTile(
+          leading: Text(item['icon'] ?? '', style: TextStyle(fontSize: 24.0)),
+          title: Text(item['name'] ?? ''),
+          onTap: () {
+            // Add functionality when an item is tapped.
+            // For example, you can show a snackbar message.
+            /* ScaffoldMessenger.of(context).showSnackBar(
+               SnackBar(
+                content: Text("You tapped ${item['name']}"),
               ),
-            ),
-            SizedBox(height: 16),
-            Text(
-              'John Doe',
-              style: TextStyle(
-                fontSize: 24,
-                color: Colors.green,
-              ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Flutter Batch 4',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.blue,
-              ),
-            ),
-          ],
-        ),
-      ),
+            );*/
+          },
+        );
+      },
     );
   }
 }

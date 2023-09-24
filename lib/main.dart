@@ -1,154 +1,98 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(PhotoGalleryApp());
+  runApp(MyApp());
 }
 
-class PhotoGalleryApp extends StatelessWidget {
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Center(child: Text("Photo Gallery")), // Center the app bar title
-        ),
-        body: PhotoGallery(),
-      ),
+      home: CounterScreen(),
     );
   }
 }
 
-class PhotoGallery extends StatelessWidget {
-  final List<String> imageUrls = [
-    "https://fotografias.antena3.com/clipping/cmsimages02/2022/12/23/61C0B7E6-300F-407A-AE9A-FD8548D6FF07/messi-copa-mundo_97.jpg?crop=3142,1767,x0,y0&width=1600&height=900&optimize=low&format=webply", // Add your image URLs here
-    "https://fotografias.antena3.com/clipping/cmsimages02/2022/12/23/61C0B7E6-300F-407A-AE9A-FD8548D6FF07/messi-copa-mundo_97.jpg?crop=3142,1767,x0,y0&width=1600&height=900&optimize=low&format=webply",
-    "https://fotografias.antena3.com/clipping/cmsimages02/2022/12/23/61C0B7E6-300F-407A-AE9A-FD8548D6FF07/messi-copa-mundo_97.jpg?crop=3142,1767,x0,y0&width=1600&height=900&optimize=low&format=webply",
-    "https://fotografias.antena3.com/clipping/cmsimages02/2022/12/23/61C0B7E6-300F-407A-AE9A-FD8548D6FF07/messi-copa-mundo_97.jpg?crop=3142,1767,x0,y0&width=1600&height=900&optimize=low&format=webply",
-    "https://fotografias.antena3.com/clipping/cmsimages02/2022/12/23/61C0B7E6-300F-407A-AE9A-FD8548D6FF07/messi-copa-mundo_97.jpg?crop=3142,1767,x0,y0&width=1600&height=900&optimize=low&format=webply",
-    "https://fotografias.antena3.com/clipping/cmsimages02/2022/12/23/61C0B7E6-300F-407A-AE9A-FD8548D6FF07/messi-copa-mundo_97.jpg?crop=3142,1767,x0,y0&width=1600&height=900&optimize=low&format=webply",
-  ];
+class CounterScreen extends StatefulWidget {
+  @override
+  _CounterScreenState createState() => _CounterScreenState();
+}
+
+class _CounterScreenState extends State<CounterScreen> {
+  int count = 0;
+
+  void incrementCount() {
+    setState(() {
+      count++;
+      if (count >= 5) {
+        _showDialog();
+      }
+    });
+  }
+
+  void decrementCount() {
+    setState(() {
+      if (count > 0) {
+        count--;
+      }
+    });
+  }
+
+  void _showDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Button pressed $count times"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Close"),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child:
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              "Welcome to our Photo Gallery!",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              decoration: InputDecoration(
-                labelText: "Search For Photos...",
-                border: OutlineInputBorder(),
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text("Grid tapped!"),
-                ),
-              );
-            },
-            child: Wrap(
-              alignment: WrapAlignment.center,
-              children: imageUrls.asMap().entries.map((entry) {
-                final int index = entry.key;
-                final String url = entry.value;
-                return GestureDetector(
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text("Image $index clicked!"), // Rename the image captions
-                      ),
-                    );
-                  },
-                  child: Card(
-                    child: Column(
-                      children: <Widget>[
-                        Image.network(
-                          url,
-                          height: 100,
-                          width: 150,
-                          fit: BoxFit.cover,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text("Image $index"), // Use "Image $index" as the caption
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-          ListTile(
-            leading: Image.network(
-              // Replace with your sample image URL
-              "https://fotografias.antena3.com/clipping/cmsimages02/2022/12/23/61C0B7E6-300F-407A-AE9A-FD8548D6FF07/messi-copa-mundo_97.jpg?crop=3142,1767,x0,y0&width=1600&height=900&optimize=low&format=webply",
-              height: 60,
-              width: 60,
-              fit: BoxFit.cover,
-            ),
-            title: Text("Photo 1"),
-            subtitle: Text("Description for photo 1"),
-          ),
-          ListTile(
-            leading: Image.network(
-              // Replace with your sample image URL
-              "https://fotografias.antena3.com/clipping/cmsimages02/2022/12/23/61C0B7E6-300F-407A-AE9A-FD8548D6FF07/messi-copa-mundo_97.jpg?crop=3142,1767,x0,y0&width=1600&height=900&optimize=low&format=webply",
-              height: 60,
-              width: 60,
-              fit: BoxFit.cover,
-            ),
-            title: Text("Photo 2"),
-            subtitle: Text("Description for photo 2"),
-          ),
-          ListTile(
-            leading: Image.network(
-              // Replace with your sample image URL
-              "https://fotografias.antena3.com/clipping/cmsimages02/2022/12/23/61C0B7E6-300F-407A-AE9A-FD8548D6FF07/messi-copa-mundo_97.jpg?crop=3142,1767,x0,y0&width=1600&height=900&optimize=low&format=webply",
-              height: 60,
-              width: 60,
-              fit: BoxFit.cover,
-            ),
-            title: Text("Photo 3"),
-            subtitle: Text("Description for photo 3"),
-          ),
-          Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              color: Colors.blue,
-              borderRadius: BorderRadius.circular(200),
-            ),
-            child: IconButton(
-              icon: Icon(
-                Icons.upload,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text("Photos Uploaded Successfully!"),
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Counter App"),
       ),
-
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              'Count:',
+              style: TextStyle(fontSize: 24),
+            ),
+            Text(
+              '$count',
+              style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                ElevatedButton(
+                  onPressed: incrementCount,
+                  child: Text("+"),
+                ),
+                SizedBox(width: 20),
+                ElevatedButton(
+                  onPressed: decrementCount,
+                  child: Text("-"),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

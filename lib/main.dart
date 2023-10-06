@@ -4,178 +4,300 @@ void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+class Product {
+  String image;
+  String name;
+  int unitPrice;
+  String color;
+  String size;
+  int quantity;
 
-  @override
-  State<MyApp> createState() => _MyAppState();
+  Product(this.image, this.name, this.unitPrice, this.color, this.size, this.quantity);
 }
 
-class _MyAppState extends State<MyApp> {
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key});
+
   @override
   Widget build(BuildContext context) {
-
-    return const MaterialApp(
+    return MaterialApp(
       title: 'Flutter Demo',
-      home: HomePage(),
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: MyHomePage(),
     );
-
   }
 }
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
-
+class MyHomePage extends StatefulWidget {
   @override
-  State<HomePage> createState() => _HomePageState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  var myItems = [
-    {
-      "img": "https://images.pexels.com/photos/274973/pexels-photo-274973.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-    },
-    {
-      "img": "https://images.pexels.com/photos/274973/pexels-photo-274973.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-    },
-    {
-      "img": "https://images.pexels.com/photos/274973/pexels-photo-274973.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-    },
-    {
-      "img": "https://images.pexels.com/photos/274973/pexels-photo-274973.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-    },
-    {
-      "img": "https://images.pexels.com/photos/274973/pexels-photo-274973.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-    },
-    {
-      "img": "https://images.pexels.com/photos/274973/pexels-photo-274973.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-    },
+class _MyHomePageState extends State<MyHomePage> {
+  List<Product> products = [
+    Product('images/product1.png', 'Pullover', 51, 'Black', 'L', 1),
+    Product('images/product2.png', 'T-Shirt', 30, 'Gray', 'L', 1),
+    Product('images/product3.png', 'Sport Dress', 43, 'Black', 'M', 1),
   ];
+
+  void increaseItemCount(int index) {
+    setState(() {
+      products[index].quantity++;
+    });
+  }
+
+  void decreaseItemCount(int index) {
+    if (products[index].quantity > 0) {
+      setState(() {
+        products[index].quantity--;
+      });
+    }
+  }
+
+  int calculateTotalAmount() {
+    int total = 0;
+    for (var product in products) {
+      total += product.quantity * product.unitPrice;
+    }
+    return total;
+  }
+
+  MySnackBar(message, context) {
+    return ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Profile"),
+        elevation: 0,
+        backgroundColor: const Color(0xFFF9F9F9),
+        iconTheme: const IconThemeData(color: Colors.black),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {},
+          ),
+        ],
       ),
-      body: OrientationBuilder(
-        builder: (context, orientation) {
-          final isLandscape = orientation == Orientation.landscape;
-          final crossAxisCount = isLandscape ? 3 : 3;
-
-          return isLandscape
-              ? Row(
-            children: [
-              Expanded(
-                flex: 1,
-                child: ClipOval(
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.width,
-                    child: Image.network('https://images.pexels.com/photos/274973/pexels-photo-274973.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
-                        fit: BoxFit.cover),
-                  ),
-                ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(14, 18, 0, 8), // Reduced bottom padding
+            child: Text(
+              "My Bag",
+              style: TextStyle(
+                fontSize: screenWidth > 600 ? 48 : 34,
+                fontWeight: FontWeight.w700,
               ),
-              Expanded(
-                flex: 2,
+            ),
+          ),
+          ListView.builder(
+            physics: NeverScrollableScrollPhysics(), // Disable scrolling for the inner list
+            shrinkWrap: true,
+            itemCount: products.length,
+            itemBuilder: (context, index) {
+              return Card(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Text(
-                        "John Doe",
-                        style: TextStyle(
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.bold,
+                    Row(
+                      children: [
+                        Image.asset(
+                          products[index].image,
+                          width: 80, // Adjust the width of the image
+                          height: 80, // Adjust the height of the image
+                          fit: BoxFit.cover,
                         ),
-                      ),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
-                      child: Text(
-                          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent commodo tincidunt augue Contrary to popular belief, simply random text.'),
-                    ),
-                    Expanded(
-                      child: GridView.builder(
-                        gridDelegate:
-                        SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: crossAxisCount,
-                          crossAxisSpacing: 0.8,
-                          childAspectRatio: isLandscape ? 1.1 : .8,
-                        ),
-                        itemCount: myItems.length,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            child: Container(
-                              margin: const EdgeInsets.all(5),
-                              width: double.infinity,
-                              height: isLandscape ? 100 : 150,
-                              child: Image.network(
-                                myItems[index]['img']!,
+                        Expanded(
+                          child: ListTile(
+                            title: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(products[index].name),
+                                Icon(Icons.more_vert),
+                              ],
+                            ),
+                            subtitle: Align(
+                              alignment: Alignment.topLeft,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  RichText(
+                                    text: TextSpan(
+                                      children: [
+                                        const TextSpan(
+                                          text: 'Color: ',
+                                          style: TextStyle(
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: '${products[index].color}',
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: '  Size: ',
+                                          style: TextStyle(
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: '${products[index].size}',
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      Container(
+                                        width: 30,
+                                        height: 30,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Color(0xFF9B9B9B),
+                                              offset: Offset(0, 1),
+                                              blurRadius: 2,
+                                              spreadRadius: 0,
+                                            ),
+                                          ],
+                                        ),
+                                        child: Material(
+                                          color: Colors.white,
+                                          shape: CircleBorder(),
+                                          child: InkWell(
+                                            borderRadius: BorderRadius.circular(20),
+                                            onTap: () => decreaseItemCount(index),
+                                            child: Center(
+                                              child: Icon(
+                                                Icons.remove,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(10),
+                                        child: Text(
+                                          '${products[index].quantity.toString()}',
+                                          style: TextStyle(color: Colors.black),
+                                        ),
+                                      ),
+                                      Container(
+                                        width: 30,
+                                        height: 30,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Color(0xFF9B9B9B),
+                                              offset: Offset(0, 1),
+                                              blurRadius: 2,
+                                              spreadRadius: 0,
+                                            ),
+                                          ],
+                                        ),
+                                        child: Material(
+                                          color: Colors.white,
+                                          shape: CircleBorder(),
+                                          child: InkWell(
+                                            borderRadius: BorderRadius.circular(20),
+                                            onTap: () => increaseItemCount(index),
+                                            child: Center(
+                                              child: Icon(
+                                                Icons.add,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Spacer(),
+                                      Text(
+                                        '${products[index].unitPrice * products[index].quantity}\$',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ),
-            ],
-          )
-              : Column(
+              );
+            },
+          ),
+        ],
+      ),
+      bottomNavigationBar: BottomAppBar(
+        elevation: 0,
+        child: Container(
+          color: Color(0xFFF9F9F9),
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              ClipOval(
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.width,
-                  child:
-                  Image.network('https://images.pexels.com/photos/274973/pexels-photo-274973.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', fit: BoxFit.cover),
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Total Amount:',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  Text(
+                    '${calculateTotalAmount().toStringAsFixed(0)}\$',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
               ),
-              const Padding(
-                padding: EdgeInsets.all(16.0),
+              ElevatedButton(
+                onPressed: () {
+                  MySnackBar("Congratulations! Your order has been placed.", context);
+                },
+                style: ElevatedButton.styleFrom(
+                  fixedSize: Size(300, 48),
+                  backgroundColor: Color(0xffdb3022),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                ),
                 child: Text(
-                  "John Doe",
+                  "CHECK OUT",
                   style: TextStyle(
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
                   ),
-                ),
-              ),
-              const Padding(
-                padding: EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
-                child: Text(
-                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent commodo tincidunt augue Contrary to popular belief, simply random text.'),
-              ),
-              Expanded(
-                child: GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: crossAxisCount,
-                    crossAxisSpacing: 0.8,
-                    childAspectRatio: isLandscape ? 0.9 : 1.1,
-                  ),
-                  itemCount: myItems.length,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      child: Container(
-                        margin: const EdgeInsets.all(5),
-                        width: double.infinity,
-                        height: isLandscape ? 100 : 150,
-                        child: Image.network(
-                          myItems[index]['img']!,
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                    );
-                  },
                 ),
               ),
             ],
-          );
-        },
+          ),
+        ),
       ),
     );
   }

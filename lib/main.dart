@@ -85,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: Column(
+      body: ListView(
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(14, 18, 0, 8), // Reduced bottom padding

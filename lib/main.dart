@@ -1,302 +1,69 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
-}
 
-class Product {
-  String image;
-  String name;
-  int unitPrice;
-  String color;
-  String size;
-  int quantity;
-
-  Product(this.image, this.name, this.unitPrice, this.color, this.size, this.quantity);
-}
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MyHomePage(),
+      title: 'Button Color Change',
+      home: ButtonColorChangeScreen(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class ButtonColorChangeScreen extends StatefulWidget {
+  const ButtonColorChangeScreen({super.key});
+
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _ButtonColorChangeScreenState createState() => _ButtonColorChangeScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  List<Product> products = [
-    Product('images/product1.png', 'Pullover', 51, 'Black', 'L', 1),
-    Product('images/product2.png', 'T-Shirt', 30, 'Gray', 'L', 1),
-    Product('images/product3.png', 'Sport Dress', 43, 'Black', 'M', 1),
-  ];
-
-  void increaseItemCount(int index) {
-    setState(() {
-      products[index].quantity++;
-    });
-  }
-
-  void decreaseItemCount(int index) {
-    if (products[index].quantity > 0) {
-      setState(() {
-        products[index].quantity--;
-      });
-    }
-  }
-
-  int calculateTotalAmount() {
-    int total = 0;
-    for (var product in products) {
-      total += product.quantity * product.unitPrice;
-    }
-    return total;
-  }
-
+class _ButtonColorChangeScreenState extends State<ButtonColorChangeScreen> {
   MySnackBar(message, context) {
-    return ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    return ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
+  }
+  List<String> buttonSizes = ['S', 'M', 'L', 'XL','XXL', 'XXXL'];
+  String? selectedSize;
+
+  void handleButtonTap(String size) {
+    setState(() {
+      selectedSize = size;
+    });
+
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-
     return Scaffold(
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: const Color(0xFFF9F9F9),
-        iconTheme: const IconThemeData(color: Colors.black),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {},
-          ),
-        ],
+        title: const Text('Size Selector'),
+        centerTitle: true,
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(14, 18, 0, 8), // Reduced bottom padding
-            child: Text(
-              "My Bag",
-              style: TextStyle(
-                fontSize: screenWidth > 600 ? 48 : 34,
-                fontWeight: FontWeight.w700,
+      body: Center(
+        child: GridView.count(
+          shrinkWrap: true,
+          crossAxisCount: 4, // Change the number of columns as needed
+          padding: const EdgeInsets.all(16.0),
+          mainAxisSpacing: 16.0,
+          crossAxisSpacing: 16.0,
+          children: buttonSizes.map((size) {
+            return ElevatedButton(
+              onPressed: () {
+                MySnackBar("You have pressed size: $size", context);
+                return handleButtonTap(size);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: size == selectedSize ? Colors.orange : Colors.white70, // Change color based on selection
+
               ),
-            ),
-          ),
-          ListView.builder(
-            physics: NeverScrollableScrollPhysics(), // Disable scrolling for the inner list
-            shrinkWrap: true,
-            itemCount: products.length,
-            itemBuilder: (context, index) {
-              return Card(
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Image.asset(
-                          products[index].image,
-                          width: 80, // Adjust the width of the image
-                          height: 80, // Adjust the height of the image
-                          fit: BoxFit.cover,
-                        ),
-                        Expanded(
-                          child: ListTile(
-                            title: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(products[index].name),
-                                Icon(Icons.more_vert),
-                              ],
-                            ),
-                            subtitle: Align(
-                              alignment: Alignment.topLeft,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  RichText(
-                                    text: TextSpan(
-                                      children: [
-                                        const TextSpan(
-                                          text: 'Color: ',
-                                          style: TextStyle(
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: '${products[index].color}',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: '  Size: ',
-                                          style: TextStyle(
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: '${products[index].size}',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: <Widget>[
-                                      Container(
-                                        width: 30,
-                                        height: 30,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Color(0xFF9B9B9B),
-                                              offset: Offset(0, 1),
-                                              blurRadius: 2,
-                                              spreadRadius: 0,
-                                            ),
-                                          ],
-                                        ),
-                                        child: Material(
-                                          color: Colors.white,
-                                          shape: CircleBorder(),
-                                          child: InkWell(
-                                            borderRadius: BorderRadius.circular(20),
-                                            onTap: () => decreaseItemCount(index),
-                                            child: Center(
-                                              child: Icon(
-                                                Icons.remove,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.all(10),
-                                        child: Text(
-                                          '${products[index].quantity.toString()}',
-                                          style: TextStyle(color: Colors.black),
-                                        ),
-                                      ),
-                                      Container(
-                                        width: 30,
-                                        height: 30,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Color(0xFF9B9B9B),
-                                              offset: Offset(0, 1),
-                                              blurRadius: 2,
-                                              spreadRadius: 0,
-                                            ),
-                                          ],
-                                        ),
-                                        child: Material(
-                                          color: Colors.white,
-                                          shape: CircleBorder(),
-                                          child: InkWell(
-                                            borderRadius: BorderRadius.circular(20),
-                                            onTap: () => increaseItemCount(index),
-                                            child: Center(
-                                              child: Icon(
-                                                Icons.add,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Spacer(),
-                                      Text(
-                                        '${products[index].unitPrice * products[index].quantity}\$',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ],
-      ),
-      bottomNavigationBar: BottomAppBar(
-        elevation: 0,
-        child: Container(
-          color: Color(0xFFF9F9F9),
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Total Amount:',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  Text(
-                    '${calculateTotalAmount().toStringAsFixed(0)}\$',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  MySnackBar("Congratulations! Your order has been placed.", context);
-                },
-                style: ElevatedButton.styleFrom(
-                  fixedSize: Size(300, 48),
-                  backgroundColor: Color(0xffdb3022),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                ),
-                child: Text(
-                  "CHECK OUT",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ),
+              child: Text(size),
+            );
+          }).toList(),
         ),
       ),
     );

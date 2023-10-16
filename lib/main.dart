@@ -1,103 +1,243 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Selection Screen',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: ItemSelectorScreen(),
-    );
-  }
+void main() {
+  runApp(const MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: ListScreen(),
+  ));
 }
 
-class ItemSelectorScreen extends StatefulWidget {
-  @override
-  _ItemSelectorScreenState createState() => _ItemSelectorScreenState();
+class ListItem {
+  dynamic title;
+  dynamic subtitle;
+
+  ListItem(this.title, this.subtitle);
 }
 
-class _ItemSelectorScreenState extends State<ItemSelectorScreen> {
-  List<Item> items = [
-    Item("Item 1", false),
-    Item("Item 2", false),
-    Item("Item 3", false),
-    Item("Item 4", false),
-    Item("Item 5", false),
+class ListScreen extends StatefulWidget {
+  const ListScreen({super.key});
+
+  @override
+  _ListScreenState createState() => _ListScreenState();
+}
+
+class _ListScreenState extends State<ListScreen> {
+  List<ListItem> items = [
+    ListItem('Item 1', "Subtitle 1"),
+    ListItem("Item 2", "Subtitle 2"),
+    // Add more items as needed
   ];
 
-  void toggleItem(int index) {
-    setState(() {
-      items[index].isSelected = !items[index].isSelected;
-    });
-  }
-
-  void showSelectedItemsDialog() {
-    int selectedCount = items.where((item) => item.isSelected).length;
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Selected Items'),
-          content: Text('The Number of  Selected Item : $selectedCount '),
-          actions: <Widget>[
-            TextButton(
-              child: Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+  TextEditingController newTitleController = TextEditingController();
+  TextEditingController newSubtitleController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Selection Screen'),
-      ),
-      body: ListView.builder(
-        itemCount: items.length,
-        itemBuilder: (BuildContext context, int index) {
-          return ListTile(
-            title: Text(
-              items[index].name,
-              style: TextStyle(
-                color: items[index].isSelected ? Colors.blue[900] : Colors.black,
-              ),
+        backgroundColor: Colors.white,
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(
+              Icons.search,
+              color: Colors.blue,
             ),
-            onTap: () {
-              toggleItem(index);
-            },
-            selected: items[index].isSelected,
-            selectedTileColor: Colors.blue.withOpacity(0.2),
-          );
-        },
+          )
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showSelectedItemsDialog();
-        },
-        child: Icon(Icons.check,color: Colors.white,),
-        backgroundColor: Colors.blue,
-        elevation: 2.0,
-        shape: CircleBorder(),
+      body: ListView(
+        children: [
+          Column(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  controller: newTitleController,
+                  decoration: const InputDecoration(
+                    labelText: "Add Title",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  controller: newSubtitleController,
+                  decoration: const InputDecoration(
+                    labelText: "Add description",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+              Container(
+                width: 100,
+                height: 45,
+                decoration: BoxDecoration(
+                  color: Colors.redAccent,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: InkWell(
+                  onTap: () {
+                    _addItem();
+                  },
+                  child: const Center(
+                    child: Text(
+                      "Add",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                return Column(
+                  children: [
+                    Card(
+                      color: Colors.grey[300],
+                      child: ListTile(
+                        leading: const CircleAvatar(
+                          backgroundColor: Colors.redAccent,
+                        ),
+                        title: Text(
+                          '${items[index].title}',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        subtitle: Text('${items[index].subtitle}'),
+                        trailing: const Icon(Icons.arrow_forward_outlined),
+                        onLongPress: () {
+                          _showOptionsDialog(context, index);
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                );
+              },
+            ),
+          ),
+        ],
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
-}
 
-class Item {
-  String name;
-  bool isSelected;
+  void _showOptionsDialog(BuildContext context, int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Alert"),
+          content: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              TextButton(
+                child: const Text("Edit"),
+                onPressed: () {
+                  Navigator.pop(context);
+                  _showEditBottomSheet(context, index);
+                },
+              ),
+              TextButton(
+                child: const Text("Delete"),
+                onPressed: () {
+                  Navigator.pop(context);
+                  _deleteItem(index);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
-  Item(this.name, this.isSelected);
+  void _showEditBottomSheet(BuildContext context, int index) {
+    TextEditingController titleController =
+    TextEditingController(text: items[index].title);
+    TextEditingController subtitleController =
+    TextEditingController(text: items[index].subtitle);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  controller: titleController,
+                  decoration: const InputDecoration(
+                      labelText: "Title", border: OutlineInputBorder()),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  controller: subtitleController,
+                  decoration: const InputDecoration(
+                      labelText: "Subtitle", border: OutlineInputBorder()),
+                ),
+              ),
+              Container(
+                width: 110,
+                height: 45,
+                decoration: BoxDecoration(
+                  color: Colors.redAccent,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      items[index].title = titleController.text;
+                      items[index].subtitle = subtitleController.text;
+                    });
+                    Navigator.pop(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.redAccent,
+                    onPrimary: Colors.white, // Text color
+                  ),
+                  child: const Text("Edit Done"),
+                ),
+              ),
+              const SizedBox(
+                height: 152,
+              )
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _addItem() {
+    final String title = newTitleController.text;
+    final String subtitle = newSubtitleController.text;
+    if (title.isNotEmpty && subtitle.isNotEmpty) {
+      setState(() {
+        items.add(ListItem(title, subtitle));
+      });
+      newTitleController.clear();
+      newSubtitleController.clear();
+    }
+  }
+
+  void _deleteItem(int index) {
+    setState(() {
+      items.removeAt(index);
+    });
+  }
 }

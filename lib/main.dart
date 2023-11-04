@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_m_11_assignment/photo_details_screen.dart';
+import 'package:Flutter_Project/photo_details_screen.dart';
 import 'package:http/http.dart' as http;
 
 void main() {

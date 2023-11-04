@@ -1,56 +1,105 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_m_11_assignment/photo_details_screen.dart';
+import 'package:http/http.dart' as http;
 
-void main() => runApp(ProfileApp());
+void main() {
+  runApp(MyApp());
+}
 
-class ProfileApp extends StatelessWidget {
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: ProfileScreen(),
+      title: 'Photo Gallery App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: PhotoListScreen(),
     );
   }
 }
 
-class ProfileScreen extends StatelessWidget {
+class PhotoListScreen extends StatefulWidget {
+  @override
+  _PhotoListScreenState createState() => _PhotoListScreenState();
+}
+
+class _PhotoListScreenState extends State<PhotoListScreen> {
+  List<Photo> photos = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchPhotos();
+  }
+
+  Future<void> fetchPhotos() async {
+    try {
+      final response = await http.get(Uri.parse('https://jsonplaceholder.typicode.com/photos'));
+      if (response.statusCode == 200) {
+        final List<dynamic> parsedData = json.decode(response.body);
+        setState(() {
+          photos = parsedData.map((json) => Photo.fromJson(json)).toList();
+        });
+      } else {
+        throw Exception('Failed to load photos');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile'),
-        centerTitle: true,
+        title: Text('Photo Gallery App'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            CircleAvatar(
-              radius: 15,
-              backgroundColor: Colors.green, // Background color of the circle
-              child: Icon(
-                Icons.person,
-                size: 20,
-                color: Colors.white, // Color of the icon
-              ),
-            ),
-            SizedBox(height: 16),
-            Text(
-              'John Doe',
-              style: TextStyle(
-                fontSize: 24,
-                color: Colors.green,
-              ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Flutter Batch 4',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.blue,
-              ),
-            ),
-          ],
-        ),
+      body: photos.isNotEmpty
+          ? ListView.separated(
+        itemCount: photos.length,
+        separatorBuilder: (context, index) => Divider(), // Add a Divider between items
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text(photos[index].title),
+            leading: Image.network(photos[index].thumbnailUrl),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => PhotoDetailScreen(photo: photos[index]),
+                ),
+              );
+            },
+          );
+        },
+      )
+
+          : Center(
+        child: CircularProgressIndicator(),
       ),
     );
   }
 }
+
+class Photo {
+  final int id;
+  final String title;
+  final String thumbnailUrl;
+  final String url;
+
+  Photo({required this.id, required this.title, required this.thumbnailUrl, required this.url});
+
+  factory Photo.fromJson(Map<String, dynamic> json) {
+    return Photo(
+      id: json['id'],
+      title: json['title'],
+      thumbnailUrl: json['thumbnailUrl'],
+      url: json['url'],
+    );
+  }
+}
+
+
+

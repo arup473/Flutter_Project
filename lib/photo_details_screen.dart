@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_m_11_assignment/main.dart';
+import 'package:Flutter_Project/main.dart';
 class PhotoDetailScreen extends StatelessWidget {
   final Photo photo;
 
